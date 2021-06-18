@@ -1,0 +1,16 @@
+{
+  "name": "yonat/jrk-cabana",
+  "type": "project",
+  "authors": [
+    {
+      "name": "yonatonreid",
+      "email": "yonatonreid@gmail.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Cabana\\": "src"
+    }
+  }
+}
