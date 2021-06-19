@@ -21,6 +21,21 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         }
     }
 
+    public function __set($key, $value): void
+    {
+        $this -> set($key, $value);
+    }
+
+    public function __get($key): mixed
+    {
+        return $this -> get($key);
+    }
+
+    #[Pure] public function __isset(string $name): bool
+    {
+        return $this -> has($name);
+    }
+
     public function data(): array
     {
         return $this -> data;
