@@ -205,4 +205,44 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
     {
         return \count($this -> data);
     }
+
+    public function underscore($name)
+    {
+        if (isset($this -> underscoreCache[$name])) {
+            return $this -> underscoreCache[$name];
+        }
+        $result = strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $name), '_'));
+        $this -> underscoreCache[$name] = $result;
+        return $result;
+    }
+
+    public function __call(string $name, array $arguments)
+    {
+        $method = strtolower($name);
+        switch (substr($method, 0, 3)) {
+            case 'get':
+                $key = $this -> underscore(substr($method, 3));
+                return $this -> get($key);
+                break;
+            case 'set':
+                $key = $this -> underscore(substr($method, 3));
+                $value = isset($args[0]) ? $args[0] : null;
+                $this -> set($key, $value);
+                break;
+            case 'uns':
+                $key = $this -> underscore(substr($method, 5));
+                $this -> remove($key);
+                break;
+            case 'rem':
+                $key = $this -> underscore(substr($method, 6));
+                $this -> remove($key);
+                break;
+            case 'has':
+                $key = $this -> underscore(substr($method, 3));
+                return $this -> has($key);
+                break;
+            default:
+                throw new InvalidArgumentException("$method is not available in DataObject.");
+        }
+    }
 }
