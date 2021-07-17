@@ -19,7 +19,6 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function __construct(array $data = [])
     {
-        $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         if (count($data)) {
             $this -> add($data);
         }
@@ -214,6 +213,9 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
     {
         if (isset($this -> underscoreCache[$name])) {
             return $this -> underscoreCache[$name];
+        }
+        if (is_null($this -> camelCaseToUnderscore)) {
+            $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         }
         $result = $this -> camelCaseToUnderscore -> filter($name);
         $this -> underscoreCache[$name] = $result;
