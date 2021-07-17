@@ -19,10 +19,10 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function __construct(array $data = [])
     {
+        $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         if (count($data)) {
             $this -> add($data);
         }
-        $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
     }
 
     public function __set($key, $value): void
