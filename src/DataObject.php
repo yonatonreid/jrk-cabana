@@ -232,7 +232,7 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
                 break;
             case 'set':
                 $key = $this -> underscore(substr($method, 3));
-                $value = isset($args[0]) ? $args[0] : null;
+                $value = $arguments[0] ?? null;
                 $this -> set($key, $value);
                 break;
             case 'uns':
