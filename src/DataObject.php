@@ -14,7 +14,7 @@ use Traversable;
 class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     protected array $data = [];
-    protected CamelCaseToUnderscore $camelCaseToUnderscore;
+    protected ?CamelCaseToUnderscore $camelCaseToUnderscore = null;
     protected array $underscoreCache = [];
 
     public function __construct(array $data = [])
