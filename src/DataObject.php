@@ -224,7 +224,7 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
 
     public function __call(string $name, array $arguments)
     {
-        $method = strtolower($name);
+        $method = trim($name);
         switch (substr($method, 0, 3)) {
             case 'get':
                 $key = $this -> underscore(substr($method, 3));
