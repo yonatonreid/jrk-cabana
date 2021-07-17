@@ -218,6 +218,7 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
             $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         }
         $result = $this -> camelCaseToUnderscore -> filter($name);
+        $name = strtolower($name);
         $this -> underscoreCache[$name] = $result;
         return $result;
     }
