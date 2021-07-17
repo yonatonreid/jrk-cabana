@@ -8,17 +8,21 @@ use Bridge\Laminas\Json\Encoder;
 use Bridge\League\Csv\Writer;
 use Bridge\Spatie\ArrayToXml\ArrayToXml;
 use JetBrains\PhpStorm\Pure;
+use Laminas\Filter\Word\CamelCaseToUnderscore;
 use Traversable;
 
 class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
 {
     protected array $data = [];
+    protected CamelCaseToUnderscore $camelCaseToUnderscore;
+    protected array $underscoreCache = [];
 
     public function __construct(array $data = [])
     {
         if (count($data)) {
             $this -> add($data);
         }
+        $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
     }
 
     public function __set($key, $value): void
@@ -211,7 +215,7 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         if (isset($this -> underscoreCache[$name])) {
             return $this -> underscoreCache[$name];
         }
-        $result = strtolower(trim(preg_replace('/([A-Z]|[0-9]+)/', "_$1", $name), '_'));
+        $result = $this -> camelCaseToUnderscore -> filter($name);
         $this -> underscoreCache[$name] = $result;
         return $result;
     }
