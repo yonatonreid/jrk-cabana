@@ -10,6 +10,7 @@ use Core\Application\Cache\CacheManager;
 use Core\Application\Config\ConfigManager;
 use Core\Application\Db\DbManager;
 use Core\Application\Dependency\DependencyManager;
+use Core\Application\Design\DesignManager;
 use Core\Application\Directory\DirectoryManager;
 use Core\Application\Environment\EnvironmentManager;
 use Core\Application\Log\LogManager;
@@ -70,6 +71,11 @@ class Cabana
     public static function configManager(): ConfigManager
     {
         return static ::app() -> getConfigManager();
+    }
+
+    public static function designManager(): DesignManager
+    {
+        return static ::app() -> getDesignManager();
     }
 
     /**
