@@ -24,6 +24,11 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         }
     }
 
+    public function getObjectId(): string
+    {
+        return spl_object_id($this);
+    }
+
     public function __set($key, $value): void
     {
         $this -> set($key, $value);
