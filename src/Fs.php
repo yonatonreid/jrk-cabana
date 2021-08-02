@@ -6,7 +6,9 @@ namespace Cabana;
 use Exception;
 use function chmod;
 use function is_dir;
+use function is_readable;
 use function mkdir;
+use function rmdir;
 
 class Fs
 {
@@ -18,6 +20,11 @@ class Fs
     public static function mkdir(string $path, int $perms = 0777, bool $recursive = true): void
     {
         mkdir($path, $perms, $recursive);
+    }
+
+    public static function rmdir(string $path): void
+    {
+        rmdir($path);
     }
 
     public static function isDir(string $path): bool
