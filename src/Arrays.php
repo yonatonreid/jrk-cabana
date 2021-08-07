@@ -15,7 +15,7 @@ class Arrays
     {
         $final = [];
         foreach ($columns as $col) {
-            $data = \Underscore\Types\Arrays ::pluck($collection, $col);
+            $data = \Underscore\Types\Arrays ::pluck([$collection], $col);
             $final[$col] = $data[0];
         }
         return $final;
