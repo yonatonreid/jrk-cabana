@@ -95,6 +95,12 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         return $result;
     }
 
+    public function asArrayValues(string $key, array $keysToIgnore = []): array
+    {
+        $data = $this -> toArray([$key], $keysToIgnore, true);
+        return $data[0];
+    }
+
     public function toCsv(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
