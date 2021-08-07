@@ -4,6 +4,8 @@
 namespace Cabana;
 
 
+use Bridge\Laminas\Json\Encoder;
+
 class DataCollection
 {
     protected array $items;
@@ -25,11 +27,28 @@ class DataCollection
         }
     }
 
-    public function toJson():string{
-        
+    public function getItem(string $key): DataObject
+    {
+        return $this -> items[$key];
     }
 
-    public function items():array{
-        return $this->items;
+    public function deleteItem(string $key): void
+    {
+        unset($this -> items[$key]);
+    }
+
+    public function toJson(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
+    {
+        $data = [];
+        foreach ($this -> items as $item) {
+            /* @var $item DataObject */
+            $data[] = $item -> toArray($keys, $keysToIgnore, $removeKeys);
+        }
+        return Encoder ::encode($data);
+    }
+
+    public function items(): array
+    {
+        return $this -> items;
     }
 }
