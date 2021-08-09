@@ -12,6 +12,11 @@ use function rmdir;
 
 class Fs
 {
+    public static function fileExists(string $file): bool
+    {
+        return is_file($file) && file_exists($file);
+    }
+
     public static function fixDirectorySeparator(string $path): string
     {
         return Strings ::strIreplace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
