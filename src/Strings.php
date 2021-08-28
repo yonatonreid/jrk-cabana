@@ -35,7 +35,7 @@ class Strings
      * </p>
      * @return string|string[] a string or an array of replacements.
      */
-    public static function strIreplace(array|string $search, array|string $replace, array|string $subject, ?int &$count): array|string
+    public static function strIreplace(array|string $search, array|string $replace, array|string $subject, ?int &$count = null): array|string
     {
         return str_ireplace($search, $replace, $subject, $count);
     }
