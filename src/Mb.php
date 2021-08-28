@@ -3,11 +3,13 @@
 namespace Cabana;
 
 use function mb_convert_case;
+use function mb_http_input;
+use function mb_http_output;
 use function mb_internal_encoding;
 use function mb_language;
+use function mb_regex_encoding;
 use function mb_strtolower;
 use function mb_strtoupper;
-use function mb_regex_encoding;
 
 class Mb
 {
@@ -166,5 +168,22 @@ class Mb
     public static function mbRegexEncoding(?string $encoding = null): string|bool
     {
         return mb_regex_encoding($encoding);
+    }
+
+    /**
+     * Get string length
+     * @link https://php.net/manual/en/function.mb-strlen.php
+     * @param string $string <p>
+     * The string being checked for length.
+     * </p>
+     * @param string|null $encoding [optional]
+     * @return int|false the number of characters in
+     * string str having character encoding
+     * encoding. A multi-byte character is
+     * counted as 1.
+     */
+    public static function mbStrlen(string $string, ?string $encoding = null): int
+    {
+        return mb_strlen($string, $encoding);
     }
 }
