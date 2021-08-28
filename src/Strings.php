@@ -28,14 +28,14 @@ class Strings
      * subject, and the return value is an array as
      * well.
      * </p>
-     * @param int &$count [optional] <p>
+     * @param int|null $count [optional] <p>
      * The number of matched and replaced needles will
      * be returned in count which is passed by
      * reference.
      * </p>
      * @return string|string[] a string or an array of replacements.
      */
-    public static function strIreplace(array|string $search, array|string $replace, array|string $subject, int &$count): array|string
+    public static function strIreplace(array|string $search, array|string $replace, array|string $subject, ?int &$count): array|string
     {
         return str_ireplace($search, $replace, $subject, $count);
     }
