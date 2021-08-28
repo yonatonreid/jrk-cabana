@@ -63,4 +63,10 @@ class Arrays
     {
         return call_user_func_array('array_map', func_get_args());
     }
+
+    public static function arrayMerge(array $array1, array $array2, ...$arrays)
+    {
+        return call_user_func_array('array_merge', func_get_args());
+    }
+
 }
