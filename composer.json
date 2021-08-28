@@ -7,7 +7,9 @@
       "email": "yonatonreid@gmail.com"
     }
   ],
-  "require": {},
+  "require": {
+    "ext-mbstring": "*"
+  },
   "autoload": {
     "psr-4": {
       "Cabana\\": "src"
