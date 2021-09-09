@@ -65,9 +65,6 @@ class Fs
      */
     public static function chmod(string $path, int $perms = 0777): void
     {
-        if (!static ::isDir($path)) {
-            throw new Exception("$path is not a valid path to change permissions on.");
-        }
         chmod($path, $perms);
     }
 
