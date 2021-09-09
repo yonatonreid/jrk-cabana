@@ -3,6 +3,7 @@
 
 namespace Cabana;
 
+use DirectoryIterator;
 use Exception;
 use function chmod;
 use function is_dir;
@@ -68,5 +69,16 @@ class Fs
             throw new Exception("$path is not a valid path to change permissions on.");
         }
         chmod($path, $perms);
+    }
+
+    public static function chmodR($path, int $perms = 0777)
+    {
+        $dir = new DirectoryIterator($path);
+        foreach ($dir as $item) {
+            static ::chmod($item -> getPathname(), $perms);
+            if ($item -> isDir() && !$item -> isDot()) {
+                static ::chmodR($item -> getPathname(), $perms);
+            }
+        }
     }
 }
