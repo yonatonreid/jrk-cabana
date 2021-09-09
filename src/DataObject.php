@@ -124,6 +124,21 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         $this -> data = $data;
     }
 
+    public function exchangeArray(array $data, bool $strict = true): void
+    {
+        $this -> flush();
+        $setData = function ($item, $key) use ($strict) {
+            if ($strict) {
+                if (!is_null($item)) {
+                    $this -> set($key, $item);
+                }
+            } else {
+                $this -> set($key, $item);
+            }
+        };
+        array_walk($data, $setData);
+    }
+
     public function add(mixed $data, mixed $value = null)
     {
         if (is_array($data)) {
