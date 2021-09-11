@@ -28,8 +28,12 @@ class Cabana
         static ::$rootPath = $rootPath;
     }
 
-    public static function getRoot(): string
+    public static function getRoot(?string $path = null): string
     {
+        if (!is_null($path)) {
+            $path = static ::$rootPath . DIRECTORY_SEPARATOR . $path;
+            return Fs ::fixDirectorySeparator($path);
+        }
         return static ::$rootPath;
     }
 
