@@ -14,18 +14,40 @@ use Core\Application\Design\DesignManager;
 use Core\Application\Directory\DirectoryManager;
 use Core\Application\Environment\EnvironmentManager;
 use Core\Application\Log\LogManager;
+use Interop\Container\ContainerInterface;
 use Zend_Exception;
 
 class Cabana
 {
+    public const APP_REGISTRY_KEY = 'app';
     protected static ?Registry $registry = null;
+    protected static string $rootPath;
+
+    public static function setRoot(string $rootPath): void
+    {
+        static ::$rootPath = $rootPath;
+    }
+
+    public static function getRoot(): string
+    {
+        return static ::$rootPath;
+    }
 
     /**
      * @throws Zend_Exception
      */
     public static function app(): AbstractApplicationContainer
     {
-        return static ::registry('app');
+        return static ::registry(static::APP_REGISTRY_KEY);
+    }
+
+    /**
+     * @return ContainerInterface
+     * @throws Zend_Exception
+     */
+    public static function sm(): ContainerInterface
+    {
+        return static ::app() -> getContainer();
     }
 
     /**
