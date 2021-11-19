@@ -209,6 +209,18 @@ class Cabana
     }
 
     /**
+     * Has Registry Key?
+     *
+     * @param string $key
+     * @return bool
+     * @throws Zend_Exception
+     */
+    public static function hasRegistryKey(string $key): bool
+    {
+        return static ::getRegistry() -> has($key);
+    }
+
+    /**
      * Return registry data.
      *
      * @throws Zend_Exception
