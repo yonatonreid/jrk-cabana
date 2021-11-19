@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * @author jrk <me at aroadahead.com>
+ * @copyright 2021 A Road Ahead, LLC
+ * @license Apache 2.0
+ */
+declare(strict_types=1);
 
 namespace Cabana;
 

@@ -1,13 +1,27 @@
 <?php
+/**
+ * @author jrk <me at aroadahead.com>
+ * @copyright 2021 A Road Ahead, LLC
+ * @license Apache 2.0
+ */
 declare(strict_types=1);
+
+/**
+ * @package \Cabana
+ */
 
 namespace Cabana;
 
+/**
+ * Import Statements
+ */
+
 use Bridge\Zend\Registry\Registry;
 use Bridge\Zend\Registry\RegistryKeyAlreadyExistsException;
+use Cabana\Registry\Exception\RegistryKeyNotFoundException;
 use Core\Application\AbstractApplicationContainer;
 use Core\Application\Cache\CacheManager;
-use Core\Application\Config\ConfigManager;
+use Core\Application\Config\Manager\ConfigManager;
 use Core\Application\Db\DbManager;
 use Core\Application\Dependency\DependencyManager;
 use Core\Application\Design\DesignManager;
@@ -16,19 +30,54 @@ use Core\Application\Environment\EnvironmentManager;
 use Core\Application\Log\LogManager;
 use Interop\Container\ContainerInterface;
 use Zend_Exception;
+use function is_null;
 
+/**
+ * Class Cabana
+ *
+ * @package \Cabana
+ */
 class Cabana
 {
+    /**
+     * App Registry Key
+     *
+     * @var string
+     */
     public const APP_REGISTRY_KEY = 'app';
-    protected static ?Registry $registry = null;
-    protected static string $rootPath;
 
+    /**
+     * Registry Instance.
+     *
+     * @var Registry|null
+     */
+    protected static ?Registry $registry = null;
+
+    /**
+     * Root Path.
+     *
+     * @var string
+     */
+    protected static ?string $rootPath = null;
+
+    /**
+     * Set Root Path.
+     *
+     * @param string $rootPath
+     * @return void
+     */
     public static function setRoot(string $rootPath): void
     {
         static ::$rootPath = $rootPath;
     }
 
-    public static function getRoot(?string $path = null): string
+    /**
+     * Return Root Path.
+     *
+     * @param string|null $path
+     * @return string|null
+     */
+    public static function getRoot(?string $path = null): ?string
     {
         if (!is_null($path)) {
             $path = static ::$rootPath . DIRECTORY_SEPARATOR . $path;
@@ -38,6 +87,9 @@ class Cabana
     }
 
     /**
+     * Return Application Instance.
+     *
+     * @return AbstractApplicationContainer
      * @throws Zend_Exception
      */
     public static function app(): AbstractApplicationContainer
@@ -46,6 +98,8 @@ class Cabana
     }
 
     /**
+     * Return Service Manager
+     *
      * @return ContainerInterface
      * @throws Zend_Exception
      */
@@ -55,6 +109,9 @@ class Cabana
     }
 
     /**
+     * Return Cache Manager
+     *
+     * @return CacheManager
      * @throws Zend_Exception
      */
     public static function cacheManager(): CacheManager
@@ -63,6 +120,9 @@ class Cabana
     }
 
     /**
+     * Return Directory Manager
+     *
+     * @return DirectoryManager
      * @throws Zend_Exception
      */
     public static function directoryManager(): DirectoryManager
@@ -71,6 +131,9 @@ class Cabana
     }
 
     /**
+     * Return Dependency Manager
+     *
+     * @return DependencyManager
      * @throws Zend_Exception
      */
     public static function dependencyManager(): DependencyManager
@@ -79,6 +142,9 @@ class Cabana
     }
 
     /**
+     * Return DB Manager
+     *
+     * @return DbManager
      * @throws Zend_Exception
      */
     public static function dbManager(): DbManager
@@ -87,6 +153,9 @@ class Cabana
     }
 
     /**
+     * Return Environment Manager
+     *
+     * @return EnvironmentManager
      * @throws Zend_Exception
      */
     public static function environmentManager(): EnvironmentManager
@@ -94,17 +163,31 @@ class Cabana
         return static ::app() -> getEnvironmentManager();
     }
 
+    /**
+     * Return Config Manager
+     *
+     * @return ConfigManager
+     * @throws Zend_Exception
+     */
     public static function configManager(): ConfigManager
     {
         return static ::app() -> getConfigManager();
     }
 
+    /**
+     * Return Design Manager
+     *
+     * @return DesignManager
+     * @throws Zend_Exception
+     */
     public static function designManager(): DesignManager
     {
         return static ::app() -> getDesignManager();
     }
 
     /**
+     * Return Log Manager
+     *
      * @throws Zend_Exception
      */
     public static function logManager(): LogManager
@@ -113,6 +196,8 @@ class Cabana
     }
 
     /**
+     * Return Registry
+     *
      * @throws Zend_Exception
      */
     public static function getRegistry(): Registry
@@ -124,17 +209,22 @@ class Cabana
     }
 
     /**
+     * Return registry data.
+     *
      * @throws Zend_Exception
+     * @throws RegistryKeyNotFoundException
      */
     public static function registry(string $key): mixed
     {
         if (static ::getRegistry() -> has($key)) {
             return static ::getRegistry() -> fetch($key);
         }
-        return null;
+        throw new RegistryKeyNotFoundException("Registry key not found: $key");
     }
 
     /**
+     * Register registry data.
+     *
      * @throws Zend_Exception
      * @throws RegistryKeyAlreadyExistsException
      */
