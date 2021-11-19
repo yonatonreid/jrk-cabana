@@ -19,9 +19,7 @@ namespace Cabana;
 use ArrayAccess;
 use ArrayIterator;
 use Bridge\Laminas\Filter\Word\CamelCaseToUnderscore;
-use Bridge\Laminas\Json\Encoder;
-use Bridge\League\Csv\Writer;
-use Bridge\Spatie\ArrayToXml\ArrayToXml;
+use Cabana\DataObject\ExportHandler;
 use Countable;
 use DOMException;
 use IteratorAggregate;
@@ -42,6 +40,7 @@ use function is_object;
 use function is_scalar;
 use function spl_object_id;
 use function substr;
+use function trim;
 
 /**
  * Class DataObject
@@ -52,6 +51,12 @@ use function substr;
  */
 class DataObject implements ArrayAccess, IteratorAggregate, Countable
 {
+    private const CALL_GET = 'get';
+    private const CALL_SET = 'set';
+    private const CALL_HAS = 'has';
+    private const CALL_UNSET = 'uns';
+    private const CALL_REMOVE = 'rem';
+
     /**
      * Data Cache
      *
@@ -160,23 +165,24 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
     public function toJson(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
-        return Encoder ::encode($data);
+        return ExportHandler ::toJson($data);
     }
 
     /**
      * To XML
      *
+     * @param array $keys
+     * @param array $keysToIgnore
+     * @param bool $removeKeys
+     * @param bool $useXmlDeclaration
      * @return string
      * @throws DOMException
      */
-    public function toXml(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false, bool $useXmlDeclaration = true): string
+    public function toXml(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false,
+                          bool  $useXmlDeclaration = true): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
-        $arrayToXml = new ArrayToXml($data);
-        if ($useXmlDeclaration) {
-            return $arrayToXml -> prettify() -> toXml();
-        }
-        return $arrayToXml -> dropXmlDeclaration() -> prettify() -> toXml();
+        return ExportHandler ::toXml($data, $useXmlDeclaration);
     }
 
     /**
@@ -216,8 +222,6 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * To CSV
-     *
      * @param array $keys
      * @param array $keysToIgnore
      * @param bool $removeKeys
@@ -228,10 +232,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
     public function toCsv(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
-        $csv = Writer ::createFromString();
-        $csv -> insertOne($this -> keys());
-        $csv -> insertAll($data);
-        return $csv -> toString();
+        return ExportHandler ::toCsv($data, $this -> keys());
     }
 
     /**
@@ -419,9 +420,9 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
      * Underscore
      *
      * @param $name
-     * @return mixed|string
+     * @return string
      */
-    public function underscore($name)
+    public function underscore($name): string
     {
         if (isset($this -> underscoreCache[$name])) {
             return $this -> underscoreCache[$name];
@@ -442,23 +443,23 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
     {
         $method = trim($name);
         switch (substr($method, 0, 3)) {
-            case 'get':
+            case self::CALL_GET:
                 $key = $this -> underscore(substr($method, 3));
                 return $this -> get($key);
-            case 'set':
+            case self::CALL_SET:
                 $key = $this -> underscore(substr($method, 3));
                 $value = $arguments[0] ?? null;
                 $this -> set($key, $value);
                 break;
-            case 'uns':
+            case self::CALL_UNSET:
                 $key = $this -> underscore(substr($method, 5));
                 $this -> remove($key);
                 break;
-            case 'rem':
+            case self::CALL_REMOVE:
                 $key = $this -> underscore(substr($method, 6));
                 $this -> remove($key);
                 break;
-            case 'has':
+            case self::CALL_HAS:
                 $key = $this -> underscore(substr($method, 3));
                 return $this -> has($key);
             default:
