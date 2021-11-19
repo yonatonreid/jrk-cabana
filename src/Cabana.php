@@ -27,7 +27,7 @@ use Core\Application\Dependency\Manager\DependencyManager;
 use Core\Application\Design\DesignManager;
 use Core\Application\Directory\DirectoryManager;
 use Core\Application\Environment\EnvironmentManager;
-use Core\Application\Log\LogManager;
+use Core\Application\Log\Manager\LogManager;
 use Interop\Container\ContainerInterface;
 use Zend_Exception;
 use function is_null;
