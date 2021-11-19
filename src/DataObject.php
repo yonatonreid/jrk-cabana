@@ -445,7 +445,6 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
             case 'get':
                 $key = $this -> underscore(substr($method, 3));
                 return $this -> get($key);
-                break;
             case 'set':
                 $key = $this -> underscore(substr($method, 3));
                 $value = $arguments[0] ?? null;
@@ -462,7 +461,6 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
             case 'has':
                 $key = $this -> underscore(substr($method, 3));
                 return $this -> has($key);
-                break;
             default:
                 throw new InvalidArgumentException("$method is not available in DataObject.");
         }
