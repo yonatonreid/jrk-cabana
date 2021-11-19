@@ -20,7 +20,7 @@ use Bridge\Zend\Registry\Registry;
 use Bridge\Zend\Registry\RegistryKeyAlreadyExistsException;
 use Cabana\Registry\Exception\RegistryKeyNotFoundException;
 use Core\Application\AbstractApplicationContainer;
-use Core\Application\Cache\CacheManager;
+use Core\Application\Cache\Manager\CacheManager;
 use Core\Application\Config\Manager\ConfigManager;
 use Core\Application\Db\DbManager;
 use Core\Application\Dependency\DependencyManager;

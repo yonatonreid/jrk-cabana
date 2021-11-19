@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 namespace Cabana;
 
+use function is_null;
 use function str_ireplace;
+use function str_replace;
+use function trim;
 use function ucwords;
 
 class Strings
@@ -35,6 +38,14 @@ class Strings
         return str_ireplace($search, $replace, $subject, $count);
     }
 
+    /**
+     * Uppercase words
+     *
+     * @param string $string
+     * @param string $destSep
+     * @param string $srcSep
+     * @return string
+     */
     public static function ucWords(string $string, string $destSep = '_', string $srcSep = '_'): string
     {
         return str_replace(' ', $destSep, ucwords(str_replace($srcSep, ' ', $string)));
