@@ -1,6 +1,20 @@
 <?php
+/**
+ * @author jrk <me at aroadahead.com>
+ * @copyright 2021 A Road Ahead, LLC
+ * @license Apache 2.0
+ */
+declare(strict_types=1);
+
+/**
+ * @package \Cabana
+ */
 
 namespace Cabana;
+
+/**
+ * Import Statements
+ */
 
 use function mb_convert_case;
 use function mb_http_input;
@@ -11,8 +25,20 @@ use function mb_regex_encoding;
 use function mb_strtolower;
 use function mb_strtoupper;
 
+/**
+ * Class Mb
+ *
+ * @package \Cabana
+ */
 class Mb
 {
+    /**
+     * UTF8 Encoding
+     *
+     * @var string
+     */
+    public const UTF8_ENCODING = "UTF-8";
+
     /**
      * Perform case folding on a string
      * @link https://php.net/manual/en/function.mb-convert-case.php
