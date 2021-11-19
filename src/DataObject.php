@@ -6,85 +6,187 @@
  */
 declare(strict_types=1);
 
+/**
+ * @package \Cabana
+ */
+
 namespace Cabana;
 
+/**
+ * Import Statements
+ */
 
+use ArrayAccess;
+use ArrayIterator;
+use Bridge\Laminas\Filter\Word\CamelCaseToUnderscore;
 use Bridge\Laminas\Json\Encoder;
 use Bridge\League\Csv\Writer;
 use Bridge\Spatie\ArrayToXml\ArrayToXml;
+use Countable;
+use DOMException;
+use IteratorAggregate;
 use JetBrains\PhpStorm\Pure;
-use Laminas\Filter\Word\CamelCaseToUnderscore;
+use League\Csv\CannotInsertRecord;
+use League\Csv\Exception;
 use Traversable;
+use function array_diff_key;
+use function array_flip;
+use function array_keys;
+use function array_values;
+use function array_walk;
+use function array_walk_recursive;
+use function count;
+use function is_array;
+use function is_null;
+use function is_object;
+use function is_scalar;
+use function spl_object_id;
+use function substr;
 
-class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
+/**
+ * Class DataObject
+ *
+ * @implements ArrayAccess
+ * @implements IteratorAggregate
+ * @implements Countable
+ */
+class DataObject implements ArrayAccess, IteratorAggregate, Countable
 {
+    /**
+     * Data Cache
+     *
+     * @var array
+     */
     protected array $data = [];
-    protected ?CamelCaseToUnderscore $camelCaseToUnderscore = null;
+
+    /**
+     * Camel case to underscore
+     *
+     * @var CamelCaseToUnderscore|null
+     */
+    protected ?CamelCaseToUnderscore $camelCaseToUnderscore;
+
+    /**
+     * Underscore cache
+     *
+     * @var array
+     */
     protected array $underscoreCache = [];
 
+    /**
+     * @param array $data
+     */
     public function __construct(array $data = [])
     {
+        $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         if (count($data)) {
             $this -> add($data);
         }
     }
 
+    /**
+     * Return Object ID
+     *
+     * @return string
+     */
     public function getObjectId(): string
     {
         return spl_object_id($this);
     }
 
+    /**
+     * Magic setter
+     *
+     * @param $key
+     * @param $value
+     * @return void
+     */
     public function __set($key, $value): void
     {
         $this -> set($key, $value);
     }
 
+    /**
+     * Magic getter
+     *
+     * @param $key
+     * @return mixed
+     */
     public function __get($key): mixed
     {
         return $this -> get($key);
     }
 
+    /**
+     * Magic isset
+     *
+     * @param string $name
+     * @return bool
+     */
     #[Pure] public function __isset(string $name): bool
     {
         return $this -> has($name);
     }
 
-    public function data(): array
-    {
-        return $this -> data;
-    }
-
+    /**
+     * Return keys
+     *
+     * @return array
+     */
     public function keys(): array
     {
-        return \array_keys($this -> data);
+        return array_keys($this -> data);
     }
 
+    /**
+     * Return all data
+     *
+     * @param array $keysToIgnore
+     * @return array
+     */
     #[Pure] public function all(array $keysToIgnore = []): array
     {
-        return array_diff_key($this -> data(), array_flip($keysToIgnore));
+        return array_diff_key($this -> data, array_flip($keysToIgnore));
     }
 
+    /**
+     * To Json
+     *
+     * @param array $keys
+     * @param array $keysToIgnore
+     * @param bool $removeKeys
+     * @return string
+     */
     public function toJson(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
         return Encoder ::encode($data);
     }
 
+    /**
+     * To XML
+     *
+     * @return string
+     * @throws DOMException
+     */
     public function toXml(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false, bool $useXmlDeclaration = true): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
-        $arrayToXml = null;
-        try {
-            $arrayToXml = new ArrayToXml($data);
-        } catch (\DOMException $e) {
-
-        }
+        $arrayToXml = new ArrayToXml($data);
         if ($useXmlDeclaration) {
             return $arrayToXml -> prettify() -> toXml();
         }
         return $arrayToXml -> dropXmlDeclaration() -> prettify() -> toXml();
     }
 
+    /**
+     * To Array
+     *
+     * @param array $keys
+     * @param array $keysToIgnore
+     * @param bool $removeKeys
+     * @return array
+     */
     public function toArray(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): array
     {
         if (empty($keys)) {
@@ -100,21 +202,43 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         return $result;
     }
 
+    /**
+     * As array values
+     *
+     * @param string $key
+     * @param array $keysToIgnore
+     * @return array
+     */
     public function asArrayValues(string $key, array $keysToIgnore = []): array
     {
         $data = $this -> toArray([$key], $keysToIgnore, true);
         return $data[0];
     }
 
+    /**
+     * To CSV
+     *
+     * @param array $keys
+     * @param array $keysToIgnore
+     * @param bool $removeKeys
+     * @return string
+     * @throws CannotInsertRecord
+     * @throws Exception
+     */
     public function toCsv(array $keys = [], array $keysToIgnore = [], bool $removeKeys = false): string
     {
         $data = $this -> toArray($keys, $keysToIgnore, $removeKeys);
         $csv = Writer ::createFromString();
         $csv -> insertOne($this -> keys());
         $csv -> insertAll($data);
-        return $csv -> getContent();
+        return $csv -> toString();
     }
 
+    /**
+     * Flush data
+     *
+     * @return void
+     */
     public function flush(): void
     {
         $remObj = function ($objectOrArray, $key) {
@@ -124,12 +248,13 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         $this -> data = [];
     }
 
-    public function replace(array $data = []): void
-    {
-        $this -> data = $data;
-    }
-
-    public function exchangeArray(array $data, bool $strict = true): void
+    /**
+     * Exchange data
+     *
+     * @param array $data
+     * @param bool $strict
+     */
+    public function exchangeArray(array $data, bool $strict = false): void
     {
         $this -> flush();
         $setData = function ($item, $key) use ($strict) {
@@ -144,11 +269,24 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         array_walk($data, $setData);
     }
 
-    public function add(mixed $data, mixed $value = null)
+    /**
+     * Add data
+     *
+     * @param mixed $data
+     * @param mixed|null $value
+     * @param bool $strict
+     */
+    public function add(mixed $data, mixed $value = null, bool $strict = false): void
     {
         if (is_array($data)) {
-            $setData = function ($item, $key) {
-                $this -> set($key, $item);
+            $setData = function ($item, $key) use ($strict) {
+                if ($strict) {
+                    if (!is_null($item)) {
+                        $this -> set($key, $item);
+                    }
+                } else {
+                    $this -> set($key, $item);
+                }
             };
             array_walk($data, $setData);
         }
@@ -157,47 +295,76 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
         }
     }
 
+    /**
+     * Has Data?
+     *
+     * @param string $key
+     * @return bool
+     */
     #[Pure] public function has(string $key): bool
     {
         return $this -> offsetExists($key);
     }
 
-    public function remove(string $key)
+    /**
+     * Remove data
+     *
+     * @param string $key
+     */
+    public function remove(string $key): void
     {
         $this -> offsetUnset($key);
     }
 
+    /**
+     * Return data
+     *
+     * @param string $key
+     * @return mixed
+     */
     public function get(string $key): mixed
     {
         return $this -> offsetGet($key);
     }
 
+    /**
+     * Set data
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public function set(string $key, mixed $value): void
     {
         $this -> offsetSet($key, $value);
     }
 
     /**
+     * Return iterator
+     *
      * @return Traversable
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
-        return new \ArrayIterator($this -> data);
+        return new ArrayIterator($this -> data);
     }
 
     /**
+     * Offset exists
+     *
      * @param mixed $offset
      * @return bool
      */
     public function offsetExists($offset): bool
     {
-        if (array_key_exists($offset, $this -> data())) {
+        if (\array_key_exists($offset, $this -> data)) {
             return true;
         }
         return false;
     }
 
     /**
+     * Offset get
+     *
      * @param mixed $offset
      * @return mixed
      */
@@ -210,8 +377,11 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
+     * Offset set
+     *
      * @param mixed $offset
      * @param mixed $value
+     * @return void
      */
     public function offsetSet($offset, $value): void
     {
@@ -219,7 +389,10 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
+     * Offset unset
+     *
      * @param mixed $offset
+     * @return void
      */
     public function offsetUnset($offset): void
     {
@@ -233,26 +406,38 @@ class DataObject implements \ArrayAccess, \IteratorAggregate, \Countable
     }
 
     /**
+     * Return count
+     *
      * @return int
      */
     public function count(): int
     {
-        return \count($this -> data);
+        return count($this -> data);
     }
 
+    /**
+     * Underscore
+     *
+     * @param $name
+     * @return mixed|string
+     */
     public function underscore($name)
     {
         if (isset($this -> underscoreCache[$name])) {
             return $this -> underscoreCache[$name];
-        }
-        if (is_null($this -> camelCaseToUnderscore)) {
-            $this -> camelCaseToUnderscore = new CamelCaseToUnderscore();
         }
         $result = strtolower($this -> camelCaseToUnderscore -> filter($name));
         $this -> underscoreCache[$name] = $result;
         return $result;
     }
 
+    /**
+     * Magic call
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return bool|mixed|void
+     */
     public function __call(string $name, array $arguments)
     {
         $method = trim($name);

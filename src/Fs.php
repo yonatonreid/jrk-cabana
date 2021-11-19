@@ -96,6 +96,7 @@ final class Fs
      * @param string $path
      * @param int $perms
      * @param bool $recursive
+     * @return void
      */
     public static function mkDirIfNotExists(string $path, int $perms = 0777, bool $recursive = true): void
     {
@@ -108,6 +109,7 @@ final class Fs
      * Make readable
      *
      * @throws Exception
+     * @return void
      */
     public static function makeReadable(string $path, int $perms = 0777): void
     {
@@ -131,6 +133,7 @@ final class Fs
      * Chmod
      *
      * @throws Exception
+     * @return void
      */
     public static function chmod(string $path, int $perms = 0777): void
     {
@@ -143,6 +146,7 @@ final class Fs
      * @param $path
      * @param int $perms
      * @throws Exception
+     * @return void
      */
     public static function chmodR($path, int $perms = 0777): void
     {
