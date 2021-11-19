@@ -1,13 +1,33 @@
 <?php
+/**
+ * @author jrk <me at aroadahead.com>
+ * @copyright 2021 A Road Ahead, LLC
+ * @license Apache 2.0
+ */
+declare(strict_types=1);
 
-
+/**
+ * @package \Cabana
+ */
 namespace Cabana;
 
-
+/**
+ * Import Statements
+ */
 use Bridge\Laminas\Json\Encoder;
 
+/**
+ * Class DataCollection
+ *
+ * @package \Cabana
+ */
 class DataCollection
 {
+    /**
+     * DataObject Array
+     *
+     * @var array
+     */
     protected array $items;
 
     public function __construct()

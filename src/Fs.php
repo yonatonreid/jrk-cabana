@@ -132,7 +132,8 @@ final class Fs
     /**
      * Chmod
      *
-     * @throws Exception
+     * @param string $path
+     * @param int $perms
      * @return void
      */
     public static function chmod(string $path, int $perms = 0777): void

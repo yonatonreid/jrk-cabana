@@ -1,13 +1,30 @@
 <?php
+/**
+ * @author jrk <me at aroadahead.com>
+ * @copyright 2021 A Road Ahead, LLC
+ * @license Apache 2.0
+ */
+declare(strict_types=1);
 
+/**
+ * @package \Cabana\DataObject
+ */
 namespace Cabana\DataObject;
 
+/**
+ * Import Statements
+ */
 use Bridge\League\Csv\Writer;
 use Bridge\Spatie\ArrayToXml\ArrayToXml;
 use DOMException;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
 
+/**
+ * Class ExportHandler
+ *
+ * @package \Cabana\DataObject
+ */
 class ExportHandler
 {
     /**
