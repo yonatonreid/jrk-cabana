@@ -22,17 +22,13 @@ use Bridge\Laminas\Filter\Word\CamelCaseToUnderscore;
 use Cabana\DataObject\ExportHandler;
 use Countable;
 use DOMException;
+use Elephant\Env\Arrays;
 use IteratorAggregate;
 use JetBrains\PhpStorm\Pure;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Exception;
 use Traversable;
-use function array_diff_key;
-use function array_flip;
 use function array_keys;
-use function array_values;
-use function array_walk;
-use function array_walk_recursive;
 use function count;
 use function is_array;
 use function is_null;
@@ -92,9 +88,9 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Return Object ID
      *
-     * @return string
+     * @return int
      */
-    public function getObjectId(): string
+    public function getObjectId(): int
     {
         return spl_object_id($this);
     }
@@ -151,7 +147,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
      */
     #[Pure] public function all(array $keysToIgnore = []): array
     {
-        return array_diff_key($this -> data, array_flip($keysToIgnore));
+        return Arrays ::arrayDiffKey($this -> data, Arrays ::arrayFlip($keysToIgnore));
     }
 
     /**
@@ -203,7 +199,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
             $result[$key] = $this -> get($key);
         }
         if ($removeKeys) {
-            return array_values($result);
+            return Arrays ::arrayValues($result);
         }
         return $result;
     }
@@ -245,7 +241,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
         $remObj = function ($objectOrArray, $key) {
             $this -> remove($key);
         };
-        array_walk_recursive($this -> data, $remObj);
+        Arrays ::arrayWalkRecursive($this -> data, $remObj);
         $this -> data = [];
     }
 
@@ -267,7 +263,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
                 $this -> set($key, $item);
             }
         };
-        array_walk($data, $setData);
+        Arrays ::arrayWalk($data, $setData);
     }
 
     /**
@@ -289,7 +285,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
                     $this -> set($key, $item);
                 }
             };
-            array_walk($data, $setData);
+            Arrays ::arrayWalk($data, $setData);
         }
         if (is_scalar($data)) {
             $this -> set($data, $value);
