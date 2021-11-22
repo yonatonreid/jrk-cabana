@@ -23,6 +23,7 @@ use Cabana\DataObject\ExportHandler;
 use Countable;
 use DOMException;
 use Elephant\Env\Arrays;
+use Elephant\Env\Strings;
 use IteratorAggregate;
 use JetBrains\PhpStorm\Pure;
 use League\Csv\CannotInsertRecord;
@@ -35,8 +36,6 @@ use function is_null;
 use function is_object;
 use function is_scalar;
 use function spl_object_id;
-use function substr;
-use function trim;
 
 /**
  * Class DataObject
@@ -423,7 +422,7 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
         if (isset($this -> underscoreCache[$name])) {
             return $this -> underscoreCache[$name];
         }
-        $result = strtolower($this -> camelCaseToUnderscore -> filter($name));
+        $result = Strings ::strtolower($this -> camelCaseToUnderscore -> filter($name));
         $this -> underscoreCache[$name] = $result;
         return $result;
     }
@@ -437,26 +436,26 @@ class DataObject implements ArrayAccess, IteratorAggregate, Countable
      */
     public function __call(string $name, array $arguments)
     {
-        $method = trim($name);
-        switch (substr($method, 0, 3)) {
+        $method = Strings ::trim($name);
+        switch (Strings ::substr($method, 0, 3)) {
             case self::CALL_GET:
-                $key = $this -> underscore(substr($method, 3));
+                $key = $this -> underscore(Strings ::substr($method, 3));
                 return $this -> get($key);
             case self::CALL_SET:
-                $key = $this -> underscore(substr($method, 3));
+                $key = $this -> underscore(Strings ::substr($method, 3));
                 $value = $arguments[0] ?? null;
                 $this -> set($key, $value);
                 break;
             case self::CALL_UNSET:
-                $key = $this -> underscore(substr($method, 5));
+                $key = $this -> underscore(Strings ::substr($method, 5));
                 $this -> remove($key);
                 break;
             case self::CALL_REMOVE:
-                $key = $this -> underscore(substr($method, 6));
+                $key = $this -> underscore(Strings ::substr($method, 6));
                 $this -> remove($key);
                 break;
             case self::CALL_HAS:
-                $key = $this -> underscore(substr($method, 3));
+                $key = $this -> underscore(Strings ::substr($method, 3));
                 return $this -> has($key);
             default:
                 throw new InvalidArgumentException("$method is not available in DataObject.");
